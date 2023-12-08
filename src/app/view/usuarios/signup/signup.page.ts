@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertService } from 'src/app/common/alert.service';
+import { AuthService } from 'src/app/model/services/auth.service';
 
 @Component({
   selector: 'app-signup',
@@ -13,6 +14,7 @@ export class SignupPage implements OnInit {
 
 
   constructor(private router: Router,
+    private authService : AuthService,
     private alertService: AlertService,
     private formBuilder: FormBuilder) {
       this.formCadastrar = new FormGroup({
@@ -45,8 +47,20 @@ export class SignupPage implements OnInit {
       }
     }
     private cadastrar(){
-      this.alertService.presentAlert("Cadastro", " Cadastro realizado com Sucesso!");
-      this.router.navigate(["signup"]);
+      this.authService
+      .signUpWithEmailPassword(this.formCadastrar.value['email'],
+      this.formCadastrar.value['senha'])
+      .then((res) => {
+        this.alertService.presentAlert("Cadastro", " Cadastro realizado com Sucesso!");
+        this.router.navigate(["signin"]);
+      })
+      .catch((error) => {
+        this.alertService.presentAlert("Cadastro", "Erro ao cadastrar!");
+        console.log(error.message)
+      })
+
+
+
     }
 
 }
